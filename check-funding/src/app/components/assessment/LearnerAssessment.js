@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { User, Calculator } from 'lucide-react';
+import { lookupPostcodeAuthority } from '../../utils/postcodeAuthority';
+
 
 const LearnerAssessment = ({ onAssessmentComplete }) => {
   const [learnerData, setLearnerData] = useState({
@@ -9,6 +11,7 @@ const LearnerAssessment = ({ onAssessmentComplete }) => {
     takeHomePay: '',
     partnerBenefitClaim: false,
     qualificationLevel: '',
+    postcode: '',
     location: 'england'
   });
 
@@ -27,6 +30,9 @@ const LearnerAssessment = ({ onAssessmentComplete }) => {
         : prev.benefits.filter(b => b !== benefit)
     }));
   };
+
+  // Lookup authority on each render (safe, fast)
+  const authority = lookupPostcodeAuthority(learnerData.postcode);
 
   const assessEligibility = () => {
     const age = parseInt(learnerData.age);
@@ -87,6 +93,22 @@ const LearnerAssessment = ({ onAssessmentComplete }) => {
               placeholder="Enter age"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Postcode</label>
+            <input
+              type="text"
+              value={learnerData.postcode}
+              onChange={(e) => handleInputChange('postcode', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your postcode"
+            />
+          </div>
+          {learnerData.postcode && (
+            <div className="mt-2 text-sm text-gray-600">
+              Funding Authority: {authority || 'Not found'}
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Employment Status</label>
